@@ -1,3 +1,11 @@
-<div id="div-contenedor" class="m-control m-container m-simplelegend">
-  <button id="ctrlTest" class="g-cartografia-bandera" title="AddFeature"></button>
+<div id="simple-legend-container" class="m-control m-container m-simplelegend">
+  <div id="simple-legend-title">{{title}}</div>
+  <div id="simple-legend-body">
+    {{#each legendElements}}
+    <div id="legend_{{this.name}}" class="simple-legend-content">
+      <label class='simple-legend-content-title'>{{this.title}}</label>
+      <img src="{{this.image}}" alt="{{this.title}}">
+    </div>
+    {{/each}}
+  </div>
 </div>

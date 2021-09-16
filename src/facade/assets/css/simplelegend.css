@@ -10,16 +10,42 @@
 }
 
 /** Estilos propios*/
-.info{
-  position : absolute;
-  width : 60%;
-  padding : 5px;
-  top : 10px;
-  left : 20%;
-  background : rgba(245, 245, 245, 0.8);
-  font-size : large;
-  border-radius : 5px;
-  border-style: dashed;
-  border-width: 2px;
+
+#simple-legend-container{
+  border-radius: 10px;
+  width: 300px;
+  height: 300px;
+  background-color:#FFFFFF;
+  /* cursor: move; */
+  box-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+
+#simple-legend-title{
+  line-height: 20px;
   text-align: center;
+  padding: 5px 5px 5px 5px;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: Muli, "sans-serif";
+  color: #6c6c6c;
+  background-color:#f4f4f4;
+}
+
+#simple-legend-body{
+background-color: #FFFFFF;
+/* width: 300px; */
+height:300px;
+overflow-y: auto;
+}
+
+.simple-legend-content{
+  display:block;
+  margin-left: 10px;
+}
+
+.simple-legend-content-title{
+  display: block;
+  font-style: italic;
+  font-weight: bold;
+  padding: 5px 5px 5px 5px;
 }
