@@ -16,8 +16,11 @@ export default class Simplelegend extends M.Plugin {
    * @param {Object} impl implementation object
    * @api stable
    */
-  constructor() {
+  constructor(config) {
     super();
+
+    this.config = config;
+
     /**
      * Facade of the map
      * @private
@@ -49,16 +52,24 @@ export default class Simplelegend extends M.Plugin {
    * @api stable
    */
   addTo(map) {
-    this.controls_.push(new SimplelegendControl());
+    this.control_ = new SimplelegendControl(this.config);
+    this.controls_.push(this.control_);
     this.map_ = map;
     // panel para agregar control - no obligatorio
     this.panel_ = new M.ui.Panel('panelSimplelegend', {
-      collapsible: true,
-      position: M.ui.position.TR,
+      // collapsible: true,
+      className: 'm-legend-panel',
+      position: M.ui.position.BR,
       collapsedButtonClass: 'g-cartografia-flecha-izquierda',
+      tooltip: 'Leyenda'
     });
+
     this.panel_.addControls(this.controls_);
     map.addPanels(this.panel_);
+
+    this.control_.on(M.evt.ADDED_TO_MAP, () => {
+      this.fire(M.evt.ADDED_TO_MAP);
+    });
   }
 
   /**
@@ -68,7 +79,7 @@ export default class Simplelegend extends M.Plugin {
    * @function
    * @api stable
    */
-  getMetadata(){
+  getMetadata() {
     return this.metadata_;
   }
 }

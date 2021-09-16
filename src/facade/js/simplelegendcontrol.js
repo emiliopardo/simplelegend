@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @module M/control/SimplelegendControl
  */
@@ -15,7 +16,7 @@ export default class SimplelegendControl extends M.Control {
    * @extends {M.Control}
    * @api stable
    */
-  constructor() {
+  constructor(config) {
     // 1. checks if the implementation can create PluginControl
     if (M.utils.isUndefined(SimplelegendImplControl)) {
       M.exception('La implementación usada no puede crear controles SimplelegendControl');
@@ -24,10 +25,9 @@ export default class SimplelegendControl extends M.Control {
     const impl = new SimplelegendImplControl();
     super(impl, 'Simplelegend');
 
-    // captura de customevent lanzado desde impl con coords
-    window.addEventListener('mapclicked', (e) => {
-      this.map_.addLabel('Hola Mundo!', e.detail);
-    });
+    this.title = config.title;
+    this.layers = config.layers;
+    this.setLegend();
   }
 
   /**
@@ -39,66 +39,25 @@ export default class SimplelegendControl extends M.Control {
    * @api stable
    */
   createView(map) {
-    if (!M.template.compileSync) { // JGL: retrocompatibilidad Mapea4
-      M.template.compileSync = (string, options) => {
-        let templateCompiled;
-        let templateVars = {};
-        let parseToHtml;
-        if (!M.utils.isUndefined(options)) {
-          templateVars = M.utils.extends(templateVars, options.vars);
-          parseToHtml = options.parseToHtml;
-        }
-        const templateFn = Handlebars.compile(string);
-        const htmlText = templateFn(templateVars);
-        if (parseToHtml !== false) {
-          templateCompiled = M.utils.stringToHtml(htmlText);
-        } else {
-          templateCompiled = htmlText;
-        }
-        return templateCompiled;
-      };
-    }
-    
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template);
+      const html = M.template.compileSync(template, this.templateVars);
       // Añadir código dependiente del DOM
+      this.element = html;
+      this.addEvents(html);
       success(html);
     });
   }
 
-  /**
-   * This function is called on the control activation
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  activate() {
-    // calls super to manage de/activation
-    super.activate();
-    const div = document.createElement('div');
-    div.id = 'msgInfo';
-    div.classList.add('info');
-    div.innerHTML = 'Haz doble click sobre el mapa';
-    this.map_.getContainer().appendChild(div);
+  addEvents(html) {
+    // QuerySelectors
 
-    this.getImpl().activateClick(this.map_);
+    // EventListener
+    html.addEventListener('mousedown', this.mouseDown)
+    document.addEventListener('mouseup', this.mouseUp)
+    document.addEventListener('mousemove', this.mousePosition)
   }
-  /**
-   * This function is called on the control deactivation
-   *
-   * @public
-   * @function
-   * @api stable
-   */
-  deactivate() {
-    // calls super to manage de/activation
-    super.deactivate();
-    const div = document.getElementById('msgInfo');
-    this.map_.getContainer().removeChild(div);
 
-    this.getImpl().deactivateClick(this.map_);
-  }
+
   /**
    * This function gets activation button
    *
@@ -124,4 +83,30 @@ export default class SimplelegendControl extends M.Control {
   }
 
   // Add your own functions
+  setLegend(){
+    let legendList = new Array()
+    for (let index = 0; index < this.layers.length; index++) {
+      const layer = this.layers[index];
+      let legendElement = {
+        title :layer.title,
+        name: layer.name,
+        image: layer.url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name + '&style=' + layer.style
+      }
+
+      legendList.push(legendElement)
+
+
+      
+    }
+
+    console.log(legendList);
+
+
+    
+    this.templateVars = { vars: { title: this.title, layerTitle: this.layers[0].title, layerlegendImage: this.layers[0].url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + this.layers[0].name + '&style=' + this.layers[0].style } };
+
+    this.templateVars = { vars: { title: this.title, legendElements: legendList} };
+    
+  }
+
 }
