@@ -52,9 +52,7 @@ export default class SimplelegendControl extends M.Control {
     // QuerySelectors
 
     // EventListener
-    html.addEventListener('mousedown', this.mouseDown)
-    document.addEventListener('mouseup', this.mouseUp)
-    document.addEventListener('mousemove', this.mousePosition)
+ 
   }
 
 
@@ -92,19 +90,9 @@ export default class SimplelegendControl extends M.Control {
         name: layer.name,
         image: layer.url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name + '&style=' + layer.style
       }
-
       legendList.push(legendElement)
 
-
-      
     }
-
-    console.log(legendList);
-
-
-    
-    this.templateVars = { vars: { title: this.title, layerTitle: this.layers[0].title, layerlegendImage: this.layers[0].url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + this.layers[0].name + '&style=' + this.layers[0].style } };
-
     this.templateVars = { vars: { title: this.title, legendElements: legendList} };
     
   }
