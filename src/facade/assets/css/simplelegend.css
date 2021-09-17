@@ -1,5 +1,5 @@
 /** Estilos sobreescritos */
-.g-cartografia-flecha-izquierda {
+/* .g-cartografia-flecha-izquierda {
   color: #00796B !important;
 }
 .g-cartografia-flecha-derecha {
@@ -7,20 +7,21 @@
 }
 .m-control.activated>button {
   color: rgb(255, 0, 0) !important;
-}
+} */
 
 /** Estilos propios*/
-
 #simple-legend-container{
   border-radius: 10px;
   width: 300px;
-  height: 300px;
   background-color:#FFFFFF;
-  /* cursor: move; */
+  position: absolute !important;
+  right: 20px;
+  bottom: 20px;
   box-shadow: 0 1px 2px rgba(0,0,0,.3);
 }
 
 #simple-legend-title{
+  cursor: initial;
   line-height: 20px;
   text-align: center;
   padding: 5px 5px 5px 5px;
@@ -33,8 +34,7 @@
 
 #simple-legend-body{
 background-color: #FFFFFF;
-/* width: 300px; */
-height:300px;
+height:180px;
 overflow-y: auto;
 }
 
@@ -46,6 +46,11 @@ overflow-y: auto;
 .simple-legend-content-title{
   display: block;
   font-style: italic;
+  font-size: 12px;
   font-weight: bold;
   padding: 5px 5px 5px 5px;
+}
+
+.simple-legend-content-image {
+  margin-left: 10px;
 }
