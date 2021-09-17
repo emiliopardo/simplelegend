@@ -160,13 +160,6 @@ export default class SimplelegendControl extends M.Control {
         '<img src="' + imageURL + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
         '</div>';
     }
-
-    //console.log(layers)
-
-
-
-
-
   }
 
 }
