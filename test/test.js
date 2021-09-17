@@ -136,5 +136,5 @@ mp.on(M.evt.ADDED_TO_MAP, () => {
 setTimeout(()=>{mp.updateLegend(layer2)}
   ,4000);
 
-  // setTimeout(()=>{mp.updateLegend(arrayLayers)}
-  // ,4000);  
+  setTimeout(()=>{mp.updateLegend(arrayLayers)}
+  ,8000);  
