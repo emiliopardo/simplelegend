@@ -57,7 +57,7 @@ export default class Simplelegend extends M.Plugin {
     this.map_ = map;
     // panel para agregar control - no obligatorio
     this.panel_ = new M.ui.Panel('panelSimplelegend', {
-      // collapsible: true,
+      //collapsible: true,
       className: 'm-legend-panel',
       position: M.ui.position.BR,
       collapsedButtonClass: 'g-cartografia-flecha-izquierda',
@@ -81,5 +81,9 @@ export default class Simplelegend extends M.Plugin {
    */
   getMetadata() {
     return this.metadata_;
+  }
+
+  updateLegend(layer){
+    this.control_.updateLegend(layer);
   }
 }
