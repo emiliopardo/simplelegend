@@ -4,8 +4,11 @@ const map = M.map({
   container: 'mapjs',
 });
 
-const configSimpleLegend ={
+
+
+const configSimpleLegend = {
   title: 'Leyenda',
+  draggable: true,
   layers: [
     {
       id: 1,
@@ -59,9 +62,9 @@ const configSimpleLegend ={
   ]
 }
 
-
-const configSimpleLegend1 ={
+const configSimpleLegend1 = {
   title: 'Leyenda',
+  draggable: true,
   layers: [
     {
       id: 1,
@@ -72,11 +75,65 @@ const configSimpleLegend1 ={
     }
   ]
 }
-const mp = new Simplelegend(configSimpleLegend);
-//const mp = new Simplelegend(configSimpleLegend1);
+
+
+
+
+let layer = new M.layer.WMS({
+  url: 'http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/direst/wms?',
+  name: 'direst_comercio_2018',
+  legend: 'Sector Comercio',
+  transparent: true
+}, {
+  params: {
+    styles: 'direst_comercio',
+    layers: 'direst_comercio_2018',
+  }
+});
+
+let layer1 = new M.layer.WMS({
+  url: 'http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/direst/wms?',
+  name: 'direst_transporte_2018',
+  legend: 'Sector Transporte y almacenamiento',
+  transparent: true
+}, {
+  params: {
+    styles: 'direst_transporte',
+    layers: 'direst_transporte_2018',
+  }
+});
+
+let layer2 = new M.layer.WMS({
+  url: 'http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/direst/wms?',
+  name: 'direst_construccion_2018',
+  legend: 'Sector Construccion',
+  transparent: true
+}, {
+  params: {
+    styles: 'direst_construccion',
+    layers: 'direst_construccion_2018',
+  }
+});
+
+let arrayLayers = new Array();
+
+arrayLayers.push(layer);
+arrayLayers.push(layer1);
+arrayLayers.push(layer2);
+
+map.addLayers([layer1]);
+//const mp = new Simplelegend(configSimpleLegend);
+const mp = new Simplelegend(configSimpleLegend1);
 
 map.addPlugin(mp);
 
-mp.on(M.evt.ADDED_TO_MAP, ()=>{
+mp.on(M.evt.ADDED_TO_MAP, () => {
   console.log('se cargo el plugin');
 })
+
+
+// setTimeout(()=>{mp.updateLegend(layer2)}
+//   ,4000);
+
+  // setTimeout(()=>{mp.updateLegend(arrayLayers)}
+  // ,4000);  
