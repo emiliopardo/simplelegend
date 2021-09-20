@@ -122,44 +122,89 @@ export default class SimplelegendControl extends M.Control {
   // Add your own functions
   setLegend() {
     let legendList = new Array()
+    let leyenda
     for (let index = 0; index < this.layers.length; index++) {
-      const layer = this.layers[index];
-      let legendElement = {
-        title: layer.title,
-        name: layer.name,
-        image: layer.url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.name + '&style=' + layer.style
+      const layer = this.layers[index]
+      // LAYER VECTOR
+      if (layer instanceof M.layer.Vector) {
+        let legendElement = {
+          title: layer.legend,
+          name: layer.name,
+          //pixel blanco
+          image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII='
+        }
+        legendList.push(legendElement)
+        layer.on(M.evt.LOAD, function () {
+          let estilo = layer.getStyle();
+          leyenda = estilo.toImage();
+          if (leyenda instanceof Promise) {
+            leyenda.then(function (response) {
+              let image = document.getElementById('img_'+layer.name);
+              image.src=response;
+            });
+          }
+        })
+        // LAYER RASTER
+      } else {
+        let legendElement = {
+          title: layer.legend,
+          name: layer.name,
+          image: layer.getLegendURL()
+        }
+        legendList.push(legendElement)
       }
-      legendList.push(legendElement)
-
     }
     this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
   }
 
   updateLegend(layers) {
+    this.legendBody.innerHTML = '';
+    let leyenda
     if (Array.isArray(layers)) {
-      this.legendBody.innerHTML = '';
-      console.log('es array');
       for (let index = 0; index < layers.length; index++) {
         const layer = layers[index];
-        let imageURL = layer.url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.options.params.layers + '&style=' + layer.options.params.styles
+        if (layer instanceof M.layer.Vector) {
+          layer.on(M.evt.LOAD, function () {
+            let estilo = layer.getStyle();
+            leyenda = estilo.toImage();
+            if (leyenda instanceof Promise) {
+              leyenda.then(function (response) {
+                this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+                  '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
+                  '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
+                  '</div>';
+              });
+            }
+          })
+        } else {
+          this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+            '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
+            '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
+            '</div>';
 
-        this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-          '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-          '<img src="' + imageURL + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-          '</div>';
-
+        }
       }
     } else {
       let layer = layers;
-      console.log('no es array')
-      this.legendBody.innerHTML = '';
-      let imageURL = layer.url + 'service=WMS&version=1.1.1&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=' + layer.options.params.layers + '&style=' + layer.options.params.styles
-
-      this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-        '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-        '<img src="' + imageURL + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-        '</div>';
+      if (layer instanceof M.layer.Vector) {
+        layer.on(M.evt.LOAD, function () {
+          let estilo = layer.getStyle();
+          leyenda = estilo.toImage();
+          if (leyenda instanceof Promise) {
+            leyenda.then(function (response) {
+              this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+                '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
+                '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
+                '</div>';
+            });
+          }
+        })
+      } else {
+        this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+          '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
+          '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
+          '</div>';
+      }     
     }
   }
-
 }
