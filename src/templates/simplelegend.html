@@ -3,8 +3,8 @@
   <div id="simple-legend-body">
     {{#each legendElements}}
     <div id="legend_{{this.name}}" class="simple-legend-content">
-      <label class="simple-legend-content-title">{{this.title}}</label>
-      <img src="{{this.image}}" alt="{{this.title}}" class ="simple-legend-content-image">
+      <label id='title_{{this.name}}'class="simple-legend-content-title">{{this.title}}</label>
+      <img id="img_{{this.name}}" src="{{this.image}}" alt="{{this.title}}" class ="simple-legend-content-image">
     </div>
     {{/each}}
   </div>
