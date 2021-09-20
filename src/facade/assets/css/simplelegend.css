@@ -36,6 +36,7 @@
 background-color: #FFFFFF;
 height:180px;
 overflow-y: auto;
+resize: vertical;
 }
 
 .simple-legend-content{
