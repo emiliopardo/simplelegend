@@ -7,7 +7,7 @@ const map = M.map({
 map.addControls(['ScaleLine', 'Mouse', 'panzoombar', 'layerSwitcher']);
 
 
-/*INICIO  TEST RASTER LAYER */
+/*INICIO TEST RASTER LAYER */
 
 let layer = new M.layer.WMS({
   url: 'http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/direst/wms?',
@@ -170,8 +170,8 @@ const configSimpleLegend2 = {
 
 
 const configSimpleLegend3 = {
-  title: 'Leyenda',
-  draggable: true,
+  title: 'TEST TITULO',
+  draggable: false,
   layers: [agricultura
   ]
 }
@@ -188,8 +188,8 @@ const configSimpleLegend4 = {
 
 // TEST 1 CAPA WMS
 
-// map.addLayers([layer]);
-// const mp = new Simplelegend(configSimpleLegend1);
+ map.addLayers([layer]);
+ const mp = new Simplelegend(configSimpleLegend1);
 
 
 // TEST 2 ARRAY CAPAS WMS
@@ -205,12 +205,16 @@ const configSimpleLegend4 = {
 
 //TEST 4 ARRAY CAPA RASTER Y VECTOR
 
-const mp = new Simplelegend(configSimpleLegend4);
-map.addLayers([layer,agricultura]);
+// const mp = new Simplelegend(configSimpleLegend4);
+// map.addLayers([layer,agricultura]);
 
 
 
 map.addPlugin(mp);
+
+// mp.on(M.evt.ADDED_TO_MAP,()=>{
+//   alert('se cargo el plugin')
+// })
 
 // TEST ACTUALIZACIÓN
 
@@ -220,9 +224,9 @@ map.addPlugin(mp);
 //   mp.updateLegend(layer) }
 //   , 4000);
 
-// setTimeout(() => {
-//   map.removeLayers(layer)
-//   map.addLayers([layer1, layer2]);
-//   mp.updateLegend([layer1, layer2]);
-// }
-//   , 8000);
+setTimeout(() => {
+  map.removeLayers(layer)
+  map.addLayers([layer1, layer2]);
+  mp.updateLegend([layer1, layer2]);
+}
+  , 4000);

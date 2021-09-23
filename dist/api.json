@@ -4,11 +4,17 @@
     "separator": "*"
   },
   "constructor": "M.plugin.Simplelegend",
-  "parameters": [],
+  "parameters": [{
+    "type": "object",
+    "properties": [{
+      "title": "[String] texto a mostrar en el titulo de panel",
+      "draggable": "[Boolean] true o false para hacer draggable la leyenda",
+      "layers": "[Array] listado de layers de Mapea a mostrar en la leyenda"
+    }],
   "files": {
     "ol": {
-      "scripts": [],
-      "styles": []
+      "scripts": ["simplelegend.ol.min.js"],
+      "styles": ["simplelegend.ol.min.css"]
     }
   },
   "metadata": {
@@ -16,11 +22,11 @@
     "uuid_version_plugin": "",
     "version_ficha_metadatos": "",
     "name": "Simplelegend",
-    "description": "Description of the plugin",
-    "text": "A full text about plugin",
+    "description": "Muestra una leyenda simple",
+    "text": "Muestra una leyenda simple de los layers de Mapea tanto Raster como Vectoriales. Se puede actualizar en tiempo de ejecución y permite la posibilidad de que la leyenda sea draggable",
     "version": "1.0.0",
-    "date": "",
-    "author": "",
+    "date": "Septiembre, 2021",
+    "author": "Emilio Pardo",
     "org": "",
     "tags": "mapea,plugin",
     "icon": "./facade/assets/icons/icons.svg",
