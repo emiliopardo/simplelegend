@@ -35,7 +35,7 @@
     const map = M.map({
         container: 'map',
     });
-    map.addControls(['ScaleLine', 'Scale', 'Mouse', 'panzoombar', 'layerSwitcher']);
+    map.addControls(['ScaleLine', 'Scale', 'Mouse', 'panzoombar']);
 
 
     let layer = new M.layer.WMS({
@@ -49,16 +49,15 @@
             layers: 'direst_comercio_2018',
         }
     });
-    map.addLayers([layer]);
+
 
     const configSimpleLegend = {
         title: 'Leyenda',
         draggable: true,
-        layers: [layer
-        ]
-
+        layers: [layer]
     }
 
+    map.addLayers([layer]);
     const mp = new M.plugin.Simplelegend(configSimpleLegend);
 
     map.addPlugin(mp);
