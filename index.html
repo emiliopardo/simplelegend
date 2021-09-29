@@ -50,11 +50,12 @@
         }
     });
 
+    map.addLayers([layer]);
+
     const configSimpleLegend = {
         title: 'Leyenda',
         draggable: true,
-        layers: [layer
-        ]
+        layers: [layer]
     }
 
     const mp = new M.plugin.Simplelegend(configSimpleLegend);
