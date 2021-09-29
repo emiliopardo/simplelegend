@@ -188,4 +188,4 @@ setTimeout(() => {
 
 ## Video Demo
 
-Para comprobar el funcionamiento de este plugin se puede descargar el [Video](https://github.com/emiliopardo/inputselectaddlayer/blob/master/docs/video/simpleLegend.webm?raw=true) el cual contempla la configuración y carga del plugin.
+Para comprobar el funcionamiento de este plugin se puede descargar el [Video](https://github.com/emiliopardo/simplelegend/blob/master/docs/video/simpleLegend.webm?raw=true) el cual contempla la configuración y carga del plugin.
