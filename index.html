@@ -37,7 +37,6 @@
     });
     map.addControls(['ScaleLine', 'Scale', 'Mouse', 'panzoombar']);
 
-
     let layer = new M.layer.WMS({
         url: 'http://www.juntadeandalucia.es/institutodeestadisticaycartografia/geoserver-ieca/direst/wms?',
         name: 'direst_comercio_2018',
@@ -49,7 +48,6 @@
             layers: 'direst_comercio_2018',
         }
     });
-
 
     const configSimpleLegend = {
         title: 'Leyenda',
