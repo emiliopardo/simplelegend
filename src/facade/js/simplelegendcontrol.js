@@ -5,6 +5,7 @@
 
 import SimplelegendImplControl from 'impl/simplelegendcontrol';
 import template from 'templates/simplelegend';
+import templateClean from 'templates/simplelegendClean';
 
 export default class SimplelegendControl extends M.Control {
   /**
@@ -25,14 +26,23 @@ export default class SimplelegendControl extends M.Control {
     const impl = new SimplelegendImplControl();
     super(impl, 'Simplelegend');
 
-    this.title = config.title;
-    this.layers = config.layers;
-    this.draggable = config.draggable;
     this.pos1 = 0;
     this.pos2 = 0;
     this.pos3 = 0;
     this.pos4 = 0;
+    if (config) {
+      this.title = config.title
+      this.draggable = config.draggable;
+      this.layers = config.layers;
+      
+      this.template = template
+    } else {
+      this.title = 'Leyenda'
+      this.draggable = true;
+      this.template = templateClean
+    }
     this.setLegend();
+
   }
 
   /**
@@ -45,7 +55,7 @@ export default class SimplelegendControl extends M.Control {
    */
   createView(map) {
     return new Promise((success, fail) => {
-      const html = M.template.compileSync(template, this.templateVars);
+      const html = M.template.compileSync(this.template, this.templateVars);
       // Añadir código dependiente del DOM
       this.element = html;
       this.addEvents(html);
@@ -123,42 +133,50 @@ export default class SimplelegendControl extends M.Control {
   setLegend() {
     let legendList = new Array()
     let leyenda
-    for (let index = 0; index < this.layers.length; index++) {
-      const layer = this.layers[index]
-      // LAYER VECTOR
-      if (layer instanceof M.layer.Vector) {
-        let legendElement = {
-          title: layer.legend,
-          name: layer.name,
-          //pixel blanco
-          image:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII='
-        }
-        legendList.push(legendElement)
-        layer.on(M.evt.LOAD, function () {
-          let estilo = layer.getStyle();
-          leyenda = estilo.toImage();
-          if (leyenda instanceof Promise) {
-            leyenda.then(function (response) {
-              let image = document.getElementById('img_'+layer.name);
-              image.src=response;
-            });
+    let layer
+    if (this.layers) {
+      for (let index = 0; index < this.layers.length; index++) {
+        layer = this.layers[index]
+        // LAYER VECTOR
+        if (layer instanceof M.layer.Vector) {
+          let legendElement = {
+            title: layer.legend,
+            name: layer.name,
+            //pixel blanco
+            image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII='
           }
-        })
-        // LAYER RASTER
-      } else {
-        let legendElement = {
-          title: layer.legend,
-          name: layer.name,
-          image: layer.getLegendURL()
+          legendList.push(legendElement)
+          layer.on(M.evt.LOAD, function () {
+            let estilo = layer.getStyle();
+            leyenda = estilo.toImage();
+            if (leyenda instanceof Promise) {
+              leyenda.then(function (response) {
+                let image = document.getElementById('img_' + layer.name);
+                image.src = response;
+              });
+            }
+          })
+          // LAYER RASTER
+        } else {
+          let legendElement = {
+            title: layer.legend,
+            name: layer.name,
+            image: layer.getLegendURL()
+          }
+          legendList.push(legendElement)
         }
-        legendList.push(legendElement)
+        console.log(layer)
       }
+
+      this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
+    } else{
+      this.templateVars = { vars: { title: this.title, draggable: this.draggable } };
     }
-    this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
   }
 
   updateLegend(layers) {
-    this.legendBody.innerHTML = '';
+    let legendBody = this.legendBody
+    legendBody.innerHTML = '';
     let leyenda
     if (Array.isArray(layers)) {
       for (let index = 0; index < layers.length; index++) {
@@ -169,15 +187,16 @@ export default class SimplelegendControl extends M.Control {
             leyenda = estilo.toImage();
             if (leyenda instanceof Promise) {
               leyenda.then(function (response) {
-                this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+                legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
                   '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
                   '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
                   '</div>';
               });
+              console.log(legendBody)
             }
           })
         } else {
-          this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+          legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
             '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
             '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
             '</div>';
@@ -192,7 +211,7 @@ export default class SimplelegendControl extends M.Control {
           leyenda = estilo.toImage();
           if (leyenda instanceof Promise) {
             leyenda.then(function (response) {
-              this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+              legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
                 '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
                 '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
                 '</div>';
@@ -200,11 +219,11 @@ export default class SimplelegendControl extends M.Control {
           }
         })
       } else {
-        this.legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
+        legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
           '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
           '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
           '</div>';
-      }     
+      }
     }
   }
 }
