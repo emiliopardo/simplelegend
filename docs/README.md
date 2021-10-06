@@ -186,6 +186,8 @@ setTimeout(() => {
 
 ```
 
+## Visor Demo
+Para comprobar el funcionamiento de este plugin se puede acceder al siguiente enlace [Ejemplo Visor](https://emiliopardo.github.io/simplelegend/).
 ## Video Demo
 
 Para comprobar el funcionamiento de este plugin se puede descargar el [Video](https://github.com/emiliopardo/simplelegend/blob/master/docs/video/simpleLegend.webm?raw=true) el cual contempla la configuración y carga del plugin.
