@@ -174,18 +174,17 @@ let clusterStyleAgricultura = new M.style.Cluster(clusterOptionsAgricultura, ven
 let compositeAgricultura = categoriaAgricultura.add(clusterStyleAgricultura);
 
 //asignación del estilo final
-agricultura.setStyle(compositeAgricultura);
-    
-const configSimple = {
-  title: 'Leyenda',
-  draggable: true,
-  layers: [agricultura, layer, layer1]
-}
+agricultura.setStyle(compositeAgricultura);  
 
-map.addLayers([agricultura, layer, layer1]);
-const mp = new M.plugin.Simplelegend(configSimple);
-
+const mp = new M.plugin.Simplelegend();
+   
 map.addPlugin(mp);    
+    
+setTimeout(() => { 
+  map.addLayers([layer, layer1, agricultura]);
+  mp.updateLegend([layer,layer1,agricultura])}
+  , 2000);
+    
 
 </script>
 
