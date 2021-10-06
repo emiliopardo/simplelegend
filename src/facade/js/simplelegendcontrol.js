@@ -164,36 +164,49 @@ export default class SimplelegendControl extends M.Control {
     let legendList = new Array()
     let legendElement
 
-    for (let index = 0; index < layers.length; index++) {
-      let layer = layers[index]
+    if (Array.isArray(layers)) {
+      for (let index = 0; index < layers.length; index++) {
+        let layer = layers[index]
         legendElement = {
           title: layer.legend,
           name: layer.name,
           image: null
         }
         legendList.push(legendElement)
-    }
-    this.template = template
-    this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
-    const test = M.template.compileSync(this.template, this.templateVars);
-    this.element.innerHTML = test.innerHTML
-    if (Array.isArray(layers)) {
-      for (let index = 0; index < layers.length; index++) {
-        const layer = layers[index];
-        this.updateImage(layer);
       }
     } else {
       let layer = layers;
-      this.updateImage(layer);
+      legendElement = {
+        title: layer.legend,
+        name: layer.name,
+        image: null
+      }
+
+      legendList.push(legendElement)
     }
+    this.template = template
+    this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
+    this.MakeQuerablePromise(this.createView()).then((data) => {
+      let simpleLegendContainer = document.getElementById('simple-legend-container')
+      simpleLegendContainer.innerHTML = data.innerHTML;
+      if (Array.isArray(layers)) {
+        for (let index = 0; index < layers.length; index++) {
+          const layer = layers[index];
+          this.updateImage(layer);
+
+        }
+      } else {
+        let layer = layers;
+        this.updateImage(layer);
+      }
+    })
   }
 
-  updateImage(layer){
+  updateImage(layer) {
     if (this.checkLayerTypeVector(layer)) {
       this.vectorLegend(layer)
-    } else{
-      let img = document.getElementById('img_'+layer.name)
-      img.src = this.rasterLegend(layer)
+    } else {
+      this.rasterLegend(layer)
     }
   }
 
@@ -224,26 +237,43 @@ export default class SimplelegendControl extends M.Control {
   }
 
   rasterLegend(layer) {
-    return layer.getLegendURL()
+    layer.on(M.evt.LOAD, this.getRasterLengendImage(layer))
   }
 
   vectorLegend(layer) {
     layer.on(M.evt.LOAD, this.getVectorLegendImage(layer))
   }
 
+  getRasterLengendImage(layer) {
+    let imgLegend = layer.getLegendURL();
+    if (imgLegend instanceof Promise) {
+      let myPromise = this.MakeQuerablePromise(imgLegend);
+      myPromise.then((data) => {
+        let img = document.getElementById('img_' + layer.name)
+        img.src = data;
+      })
+    } else {
+      let img = document.getElementById('img_' + layer.name)
+      img.src = layer.getLegendURL();
+    }
+  }
+
   getVectorLegendImage(layer) {
-    layer.on(M.evt.CHANGE_STYLE, ()=>{
-      let estilo = layer.getStyle();
-      let imgLegend = estilo.toImage();
-      if (imgLegend instanceof Promise) {
-        let myPromise = this.MakeQuerablePromise(imgLegend);
-        myPromise.then((data)=>{
-          let img = document.getElementById('img_'+layer.name)
-          img.src=data;
-          return data;
-        })
-      }
-    })
+    layer.on(M.evt.CHANGE_STYLE,()=>{
+    let estilo = layer.getStyle();
+    let imgLegend = estilo.toImage();
+    if (imgLegend instanceof Promise) {
+      let myPromise = this.MakeQuerablePromise(imgLegend);
+      myPromise.then((data) => {
+        let img = document.getElementById('img_' + layer.name)
+        img.src = data;
+      })
+    } else {
+      let img = document.getElementById('img_' + layer.name);
+      img.src = imgLegend;
+
+    }
+  })
   }
 
   checkLayerTypeVector(layer) {
