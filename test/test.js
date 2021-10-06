@@ -152,12 +152,16 @@ agricultura.setStyle(compositeAgricultura);
 /*FIN  TEST VECTOR LAYER */
 
 
+const configSimpleLegend = {
+  title: 'Leyenda',
+  draggable: true,
+  layers: []
+}
 
 const configSimpleLegend1 = {
   title: 'Leyenda',
   draggable: true,
-  layers: [layer
-  ]
+  layers: [layer]
 }
 
 
@@ -171,7 +175,7 @@ const configSimpleLegend2 = {
 
 const configSimpleLegend3 = {
   title: 'TEST TITULO',
-  draggable: false,
+  draggable: true,
   layers: [agricultura
   ]
 }
@@ -188,8 +192,9 @@ const configSimpleLegend4 = {
 
 // TEST 1 CAPA WMS
 
- map.addLayers([layer]);
- const mp = new Simplelegend(configSimpleLegend1);
+ //map.addLayers([layer]);
+ //const mp = new Simplelegend(configSimpleLegend1);
+ 
 
 
 // TEST 2 ARRAY CAPAS WMS
@@ -210,7 +215,7 @@ const configSimpleLegend4 = {
 
 
 
-map.addPlugin(mp);
+
 
 // mp.on(M.evt.ADDED_TO_MAP,()=>{
 //   alert('se cargo el plugin')
@@ -218,15 +223,34 @@ map.addPlugin(mp);
 
 // TEST ACTUALIZACIÓN
 
-// setTimeout(() => { 
-//   map.removeLayers(agricultura)
-//   map.addLayers([layer]);
-//   mp.updateLegend(layer) }
-//   , 4000);
 
-setTimeout(() => {
-  map.removeLayers(layer)
-  map.addLayers([layer1, layer2]);
-  mp.updateLegend([layer1, layer2]);
-}
-  , 4000);
+
+
+
+// const configSimple = {
+//   title: 'Leyenda',
+//   draggable: true,
+//   layers: [agricultura, layer, layer1]
+// }
+
+// map.addLayers([agricultura, layer, layer1]);
+// const mp = new Simplelegend(configSimple);
+
+// map.addPlugin(mp);
+
+const mp = new Simplelegend();
+map.addPlugin(mp);
+
+setTimeout(() => { 
+  // map.addLayers([agricultura]);
+  // mp.updateLegend(agricultura)}
+  map.addLayers([layer, layer1, agricultura]);
+  mp.updateLegend([layer,layer1,agricultura])}
+  , 2000);
+
+//  setTimeout(() => {
+// //  map.removeLayers(layer)
+//   map.addLayers([layer1, layer2]);
+//   mp.updateLegend([layer1, layer2]);
+// }
+//   , 4000);
