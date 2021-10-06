@@ -31,10 +31,11 @@ export default class SimplelegendControl extends M.Control {
     this.pos3 = 0;
     this.pos4 = 0;
     if (config) {
+      this.config = config;
       this.title = config.title
       this.draggable = config.draggable;
       this.layers = config.layers;
-      
+
       this.template = template
     } else {
       this.title = 'Leyenda'
@@ -132,98 +133,124 @@ export default class SimplelegendControl extends M.Control {
   // Add your own functions
   setLegend() {
     let legendList = new Array()
-    let leyenda
-    let layer
+    let legendElement
     if (this.layers) {
       for (let index = 0; index < this.layers.length; index++) {
-        layer = this.layers[index]
+        let layer = this.layers[index]
         // LAYER VECTOR
-        if (layer instanceof M.layer.Vector) {
-          let legendElement = {
+        if (this.checkLayerTypeVector(layer)) {
+          legendElement = {
             title: layer.legend,
             name: layer.name,
-            //pixel blanco
-            image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII='
+            image: this.vectorLegend(layer)
           }
-          legendList.push(legendElement)
-          layer.on(M.evt.LOAD, function () {
-            let estilo = layer.getStyle();
-            leyenda = estilo.toImage();
-            if (leyenda instanceof Promise) {
-              leyenda.then(function (response) {
-                let image = document.getElementById('img_' + layer.name);
-                image.src = response;
-              });
-            }
-          })
           // LAYER RASTER
         } else {
-          let legendElement = {
+          legendElement = {
             title: layer.legend,
             name: layer.name,
-            image: layer.getLegendURL()
+            image: this.rasterLegend(layer)
           }
-          legendList.push(legendElement)
         }
-        console.log(layer)
+        legendList.push(legendElement)
       }
-
       this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
-    } else{
+    } else {
       this.templateVars = { vars: { title: this.title, draggable: this.draggable } };
     }
   }
 
   updateLegend(layers) {
-    let legendBody = this.legendBody
-    legendBody.innerHTML = '';
-    let leyenda
+    let legendList = new Array()
+    let legendElement
+
+    for (let index = 0; index < layers.length; index++) {
+      let layer = layers[index]
+        legendElement = {
+          title: layer.legend,
+          name: layer.name,
+          image: null
+        }
+        legendList.push(legendElement)
+    }
+    this.template = template
+    this.templateVars = { vars: { title: this.title, draggable: this.draggable, legendElements: legendList } };
+    const test = M.template.compileSync(this.template, this.templateVars);
+    this.element.innerHTML = test.innerHTML
     if (Array.isArray(layers)) {
       for (let index = 0; index < layers.length; index++) {
         const layer = layers[index];
-        if (layer instanceof M.layer.Vector) {
-          layer.on(M.evt.LOAD, function () {
-            let estilo = layer.getStyle();
-            leyenda = estilo.toImage();
-            if (leyenda instanceof Promise) {
-              leyenda.then(function (response) {
-                legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-                  '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-                  '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-                  '</div>';
-              });
-              console.log(legendBody)
-            }
-          })
-        } else {
-          legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-            '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-            '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-            '</div>';
-
-        }
+        this.updateImage(layer);
       }
     } else {
       let layer = layers;
-      if (layer instanceof M.layer.Vector) {
-        layer.on(M.evt.LOAD, function () {
-          let estilo = layer.getStyle();
-          leyenda = estilo.toImage();
-          if (leyenda instanceof Promise) {
-            leyenda.then(function (response) {
-              legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-                '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-                '<img src="' + response + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-                '</div>';
-            });
-          }
-        })
-      } else {
-        legendBody.innerHTML += '<div id="legend_' + layer.name + '" class="simple-legend-content">\n' +
-          '<label class="simple-legend-content-title">' + layer.legend + '</label>\n' +
-          '<img src="' + layer.getLegendURL() + '" alt="' + layer.legend + '" class ="simple-legend-content-image"></img>\n' +
-          '</div>';
-      }
+      this.updateImage(layer);
     }
+  }
+
+  updateImage(layer){
+    if (this.checkLayerTypeVector(layer)) {
+      this.vectorLegend(layer)
+    } else{
+      let img = document.getElementById('img_'+layer.name)
+      img.src = this.rasterLegend(layer)
+    }
+  }
+
+  MakeQuerablePromise(promise) {
+    // Don't modify any promise that has been already modified.
+    if (promise.isFulfilled) return promise;
+    // Set initial state
+    var isPending = true;
+    var isRejected = false;
+    var isFulfilled = false;
+    // Observe the promise, saving the fulfillment in a closure scope.
+    var result = promise.then(
+      function (v) {
+        isFulfilled = true;
+        isPending = false;
+        return v;
+      },
+      function (e) {
+        isRejected = true;
+        isPending = false;
+        throw e;
+      }
+    );
+    result.isFulfilled = () => { return isFulfilled; };
+    result.isPending = () => { return isPending; };
+    result.isRejected = () => { return isRejected; };
+    return result;
+  }
+
+  rasterLegend(layer) {
+    return layer.getLegendURL()
+  }
+
+  vectorLegend(layer) {
+    layer.on(M.evt.LOAD, this.getVectorLegendImage(layer))
+  }
+
+  getVectorLegendImage(layer) {
+    layer.on(M.evt.CHANGE_STYLE, ()=>{
+      let estilo = layer.getStyle();
+      let imgLegend = estilo.toImage();
+      if (imgLegend instanceof Promise) {
+        let myPromise = this.MakeQuerablePromise(imgLegend);
+        myPromise.then((data)=>{
+          let img = document.getElementById('img_'+layer.name)
+          img.src=data;
+          return data;
+        })
+      }
+    })
+  }
+
+  checkLayerTypeVector(layer) {
+    let type = false
+    if (layer instanceof M.layer.Vector) {
+      type = true
+    }
+    return type
   }
 }
