@@ -30,6 +30,7 @@ export default class SimplelegendControl extends M.Control {
     this.pos2 = 0;
     this.pos3 = 0;
     this.pos4 = 0;
+    
     if (config) {
       this.config = config;
       this.title = config.title
@@ -42,6 +43,7 @@ export default class SimplelegendControl extends M.Control {
       this.draggable = true;
       this.template = templateClean
     }
+    this.legendIsOpen = true;
     this.setLegend();
 
   }
@@ -66,6 +68,7 @@ export default class SimplelegendControl extends M.Control {
 
   addEvents(html) {
 
+    this.legendShowHide = html.querySelector('button#legend-Show-Hide');
     this.legendTitle = html.querySelector('div#simple-legend-title');
     this.legendBody = html.querySelector('div#simple-legend-body');
 
@@ -102,6 +105,11 @@ export default class SimplelegendControl extends M.Control {
       //console.log('dragend')
       html.style.top = (html.offsetTop - this.pos2) + "px";
       html.style.left = (html.offsetLeft - this.pos1) + "px";
+    })
+
+    this.legendShowHide.addEventListener('click',(e)=>{
+      console.log('Mostar Ocultar Leyenda');
+      this.showHideLegend();
     })
   }
 
@@ -199,7 +207,33 @@ export default class SimplelegendControl extends M.Control {
         let layer = layers;
         this.updateImage(layer);
       }
+      this.legendShowHide = document.querySelector('button#legend-Show-Hide');
+      this.legendShowHide.addEventListener('click',(e)=>{
+        this.showHideLegend();
+      })
     })
+  }
+
+  showHideLegend(){
+
+    let legendBody = document.querySelector('div#simple-legend-body');
+    if (this.legendIsOpen){
+      legendBody.style.display = 'none';
+      this.legendIsOpen = false;
+      console.log(this.legendShowHide.classList)
+      this.legendShowHide.classList.remove('g-cartografia-menos2')
+      this.legendShowHide.classList.add('g-cartografia-mas2')
+      
+    }else {
+      legendBody.style.display = 'block';
+      this.legendIsOpen = true;
+      // this.legendShowHide.
+      console.log(this.legendShowHide.classList)
+      this.legendShowHide.classList.remove('g-cartografia-mas2')
+      this.legendShowHide.classList.add('g-cartografia-menos2')
+    }
+    
+
   }
 
   updateImage(layer) {
